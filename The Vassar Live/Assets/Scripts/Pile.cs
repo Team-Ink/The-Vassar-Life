@@ -6,6 +6,7 @@ public class CardPile
 {
 	public string building;
 	public List<Card> cardPile = new List<Card>();
+	public List<ProfCard> profPile = new List<ProfCard>();
 	public int size;
 
 	public Attributes none = new Attributes(0, 0, 0, 0, 0);
@@ -64,6 +65,29 @@ public class CardPile
 	public Attributes pOnehOne = new Attributes(0, 0, 0, 1, 1);
 	public Attributes hMinusFive = new Attributes(0, 0, 0, 0, -5);
 
+    CardPile()
+    {
+		createProf();
+    }
+
+    public void createProf()
+    {
+		profPile.Add(new ProfCard("Meireles Rui", "+2 academics for every lab session", "Combo: +5 academics for every lab session",
+		acTwo, acFive, 0, "Lab"));
+		profPile.Add(new ProfCard("Amitava Kumar", "+1 academics every time you go to Sunset Lake", "Combo: +3 academics every time you go to Sunset Lake",
+		acOne, acThree, 1, "Sunset Lake"));
+		profPile.Add(new ProfCard("Michael Joyce", "+1 academics every time you go to Vogelstein", "Combo: +3 academics every time you go to Vogelstein",
+		acOne, acThree, 2, "Vogelstein"));
+		profPile.Add(new ProfCard("Justin Patch", "+1 academics every time you go to Vogelstein", "Combo: +3 academics every time you go to Vogelstein",
+		acOne, acThree, 3, "Vogelstein"));
+	}
+
+    public ProfCard pickProf()
+    {
+		int cardIndex = Random.Range(0, profPile.Count);
+		return profPile[cardIndex];
+	}
+
     public static CardPile createLib()
     {
 		CardPile cp = new CardPile();
@@ -121,21 +145,21 @@ public class CardPile
 				"Happiness -2", cp.hMinusTwo, "", false));
 		cp.cardPile.Add(new Card("Oh no! You forgot to return the book you checked out a while ago.",
 				"Happiness -2", cp.hMinusTwo, "", false));
-		cp.cardPile.Add(new Card("Immigrant, Montana by Amitava Kumar",
-				"Academics+10", cp.acTen, "Kumar", true));
-		cp.cardPile.Add(new Card("Disappearance by Michael Joyce",
-				"Academics+10", cp.acTen, "Joyce", true));
-		cp.cardPile.Add(new Card("Terrior by Thomas Parker",
-				"Academics+10", cp.acTen, "Parker", true));
-		cp.cardPile.Add(new Card("Geometry from a Differentiable Viewpoint by John McCleary",
-				"Academics+10", cp.acTen, "McCleary", true));
+		cp.cardPile.Add(new ComboItem("Immigrant, Montana by Amitava Kumar",
+				"Academics+10, Combo: +3 Academics every time you go to sunset lake", cp.acTen, cp.acThree, "Sunset Lake", 1));
+		cp.cardPile.Add(new ComboItem("Disappearance by Michael Joyce",
+				"Academics+10, +3 Academics every time you go to Vogelstein", cp.acTen, cp.acThree, "Vogelstein", 2));
+		cp.cardPile.Add(new ComboItem("Terrior by Thomas Parker",
+				"Academics+10, +3 Academics every time you go to Gordon Commons", cp.acTen, cp.acThree, "Deece", 3));
+		cp.cardPile.Add(new ComboItem("Geometry from a Differentiable Viewpoint by John McCleary",
+				"Academics+10, +3 Academics every time you go to Main", cp.acTen, cp.acThree, "Main", 4));
 		return cp;
 	}
 
 	public static CardPile createMain()
 	{
 		CardPile cp = new CardPile();
-        /*
+        
 		cp.cardPile.Add(new Card("It's Chili Wednesday! You had lunch at retreat with your friends.",
 				"Social +2", cp.sTwo, "", false));
 		cp.cardPile.Add(new Card("It's Chili Wednesday! You had lunch at retreat with your friends.",
@@ -176,9 +200,6 @@ public class CardPile
 				"Academics +1, Happiness +1", cp.acOnehOne, "", false));
 		cp.cardPile.Add(new Card("You went to the innovation lab and had a lot of fun with the 3D printer",
 				"Academics +1, Happiness +1", cp.acOnehOne, "", false));
-        */
-		cp.cardPile.Add(new ProfCard("Meireles Rui", "+2 academics for every lab session", "Combo: +5 academics for every lab session",
-		cp.acTwo, cp.acFive, 0, "Lab"));
 		return cp;
 	}
 

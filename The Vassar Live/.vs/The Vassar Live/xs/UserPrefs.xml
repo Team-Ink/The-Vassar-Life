@@ -1,0 +1,38 @@
+﻿<Properties StartupConfiguration="{1BCA1D80-EE82-51C1-A5F7-A80403046207}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Skill Tree/GiveProf.cs">
+    <Files>
+      <File FileName="Assets/Scripts/UIHandler.cs" Line="442" Column="2" />
+      <File FileName="Assets/Scripts/Skill Tree/Skills.cs" Line="11" Column="16" />
+      <File FileName="Assets/Scripts/Skill Tree/Tree.cs" Line="35" Column="1" />
+      <File FileName="Assets/Scripts/Attributes.cs" />
+      <File FileName="Assets/Scripts/Skill Tree/SkillEffect.cs" Line="7" Column="4" />
+      <File FileName="Assets/Scripts/Skill Tree/MultiplierSkill.cs" Line="19" Column="74" />
+      <File FileName="Assets/Scripts/Skill Tree/AddSkill.cs" Line="7" Column="27" />
+      <File FileName="Assets/Scripts/Skill Tree/UnlockSkill.cs" Line="22" Column="1" />
+      <File FileName="Assets/Scripts/Skill Tree/GiveProf.cs" Line="8" Column="17" />
+      <File FileName="Assets/Scripts/Pile.cs" Line="89" Column="3" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="The Vassar Live" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="Skill Tree" expanded="True">
+                  <Node name="GiveProf.cs" selected="True" />
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="95a24b38-922b-4574-9336-725bf0e8770e" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

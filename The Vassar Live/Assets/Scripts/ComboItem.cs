@@ -4,17 +4,24 @@ using UnityEngine;
 
 public class ComboItem : Card
 {
-    int index;
+    public int index;
+    public string comboType;
+    public Attributes combo;
+
     public ComboItem()
     {
 
     }
-	public ComboItem(string description, string effect, Attributes att, string note, int index)
-	{
-		this.description = description;
-		this.effect = effect;
-		this.att = att;
-		this.note = note;
-		this.index = index;
+	public ComboItem(string description, string effect, Attributes att, Attributes combo, string comboType, int index)
+    {
+        this.description = description;
+        this.effect = effect;
+        this.att = att;
+        //this.note = note;
+        this.combo = combo;
+        this.comboType = comboType;
+        this.index = index;
+
     }
+
 }

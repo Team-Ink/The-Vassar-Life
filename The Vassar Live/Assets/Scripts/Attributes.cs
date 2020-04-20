@@ -25,10 +25,26 @@ public class Attributes
 
 	public void addAttributes(Attributes att)
 	{
-		this.AC += att.AC;
-		this.AR += att.AR;
-		this.S += att.S;
-		this.P += att.P;
-		this.H += att.H;
+		AC += att.AC;
+		AR += att.AR;
+		S += att.S;
+		P += att.P;
+		H += att.H;
+    }
+
+    public void multiplyAttributes (Attributes att)
+    {
+		AC *= att.AC;
+		AR *= att.AR;
+		S *= att.S;
+		P *= att.P;
+		H *= att.H;
+	}
+
+    public bool equals(Attributes att)
+    {
+		if (AC == att.AC && AR == att.AR && S == att.S && P == att.P && H == att.H)
+			return true;
+		else return false;
     }
 }

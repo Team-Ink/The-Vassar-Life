@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class UIHandler : MonoBehaviour
 {
-    static Attributes points = new Attributes(0, 0, 0, 0, 5);
+    public static Attributes points = new Attributes(0, 0, 0, 0, 5);
     static Attributes labBonus = new Attributes(0, 0, 0, 0, 0);
     static Attributes sunsetLakeBonus = new Attributes(0, 0, 0, 0, 0);
     static Attributes mainBonus = new Attributes(0, 0, 0, 0, 0);
@@ -21,7 +21,7 @@ public class UIHandler : MonoBehaviour
     double h = points.H;
     int turn = 0;
     double multiplier = 1.0;
-
+    #region UIFields
     [SerializeField]
     public Button LibraryButton;
     [SerializeField]
@@ -40,6 +40,24 @@ public class UIHandler : MonoBehaviour
     public Button LoebButton;
     [SerializeField]
     public Button GymButton;
+    [SerializeField]
+    public Button VogelsteinButton;
+    [SerializeField]
+    public Button LibraryLbl;
+    [SerializeField]
+    public Button MainLbl;
+    [SerializeField]
+    public Button SkinnerLbl;
+    [SerializeField]
+    public Button BridgeLbl;
+    [SerializeField]
+    public Button GordonCommonsLbl;
+    [SerializeField]
+    public Button LoebLbl;
+    [SerializeField]
+    public Button GymLbl;
+    [SerializeField]
+    public Button VogelsteinLbl;
     [SerializeField]
     public Text buildingName;
     [SerializeField]
@@ -91,12 +109,16 @@ public class UIHandler : MonoBehaviour
     public Text PScore;
     [SerializeField]
     public Text HScore;
+    #endregion
 
     public Dictionary<string, CardPile> cdb = new Dictionary<string, CardPile>();
-    public Dictionary<string, Attributes> profBonusDict = new Dictionary<string, Attributes>();
+    public Dictionary<string, Attributes> BonusDict = new Dictionary<string, Attributes>();
+    public Dictionary<string, Attributes> MultiplierDict = new Dictionary<string, Attributes>();
     public Dictionary<string, Sprite> buildingSprite = new Dictionary<string, Sprite>();
+    public Dictionary<string, bool> unlockDict = new Dictionary<string, bool>();
     public Sprite[] profSprites = new Sprite [10];
 
+    #region Initialization
     public void initBuildingSprite()
     {
         buildingSprite.Add("Bridge", bridgeSprite);
@@ -107,7 +129,6 @@ public class UIHandler : MonoBehaviour
         buildingSprite.Add("Gym", gymSprite);
         buildingSprite.Add("Loeb", loebSprite);
         buildingSprite.Add("Dorm", dormSprite);
-
     }
     public void initProfSprites()
     {
@@ -117,6 +138,7 @@ public class UIHandler : MonoBehaviour
 
     public void initCdb()
     {
+        //loop for the buildings
         cdb.Add("Library", CardPile.createLib());
         cdb.Add("Main", CardPile.createMain());
         cdb.Add("Deece", CardPile.createDeece());
@@ -127,23 +149,52 @@ public class UIHandler : MonoBehaviour
         cdb.Add("Gym", CardPile.createGym());
     }
 
-    public void initProfBonusDict()
+    public void initBonusDict()
     {
-        profBonusDict.Add("Lab", new Attributes(0, 0, 0, 0, 0));
-        profBonusDict.Add("Main", new Attributes(0, 0, 0, 0, 0));
-        profBonusDict.Add("Skinner", new Attributes(0, 0, 0, 0, 0));
-        profBonusDict.Add("Loeb", new Attributes(0, 0, 0, 0, 0));
-        profBonusDict.Add("Deece", new Attributes(0, 0, 0, 0, 0));
-        profBonusDict.Add("Dorm", new Attributes(0, 0, 0, 0, 0));
-        profBonusDict.Add("Sunset Lake", new Attributes(0, 0, 0, 0, 0));
-        profBonusDict.Add("Direct", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Lab", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Main", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Skinner", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Loeb", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Deece", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Dorm", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Sunset Lake", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Direct", new Attributes(0, 0, 0, 0, 0));
     }
+
+    public void initMultiplierDict()
+    {
+        MultiplierDict.Add("Lab", new Attributes(1, 1, 1, 1, 1));
+        MultiplierDict.Add("Main", new Attributes(1, 1, 1, 1, 1));
+        MultiplierDict.Add("Skinner", new Attributes(1, 1, 1, 1, 1));
+        MultiplierDict.Add("Loeb", new Attributes(1, 1, 1, 1, 1));
+        MultiplierDict.Add("Deece", new Attributes(1, 1, 1, 1, 1));
+        MultiplierDict.Add("Dorm", new Attributes(1, 1, 1, 1, 1));
+        MultiplierDict.Add("Sunset Lake", new Attributes(1, 1, 1, 1, 1));
+    }
+
+    public void initUnlockDict()
+    {
+        unlockDict.Add("Main", true);
+        unlockDict.Add("Library", true);
+        unlockDict.Add("Gym", true);
+        unlockDict.Add("Skinner", false);
+        unlockDict.Add("Vogelstein", false);
+        unlockDict.Add("VarsityPractice", false);
+        unlockDict.Add("Loeb", true);
+        unlockDict.Add("Deece", false);
+        unlockDict.Add("Dorm", true);
+        unlockDict.Add("Sunset Lake", false);
+    }
+    #endregion
+
     void Start()
     {
+        //make sure all the dictionaries are initialized
         initCdb();
-        initProfBonusDict();
+        initBonusDict();
         initBuildingSprite();
         initProfSprites();
+        initMultiplierDict();
         cardImage = GameObject.Find("CardTemplate").GetComponent<Image>();
         profCardImage = GameObject.Find("ProfCardTemplate").GetComponent<Image>();
         profImage = GameObject.Find("Image").GetComponent<Image>();
@@ -172,6 +223,7 @@ public class UIHandler : MonoBehaviour
         if (c is ProfCard)
         {
             processProf((ProfCard)c);
+            cdb[building].cardPile.Remove(c);
         }
         else
         {
@@ -181,6 +233,21 @@ public class UIHandler : MonoBehaviour
             cardContent.text = c.description;
             cardEffect.text = c.effect;
             NextButton.gameObject.SetActive(true);
+            if (c is ComboItem)
+            {
+                int i = ((ComboItem)c).index;
+                if (comboSet.Contains(i))
+                {
+                    BonusDict[((ComboItem)c).comboType].addAttributes(((ComboItem)c).combo);
+                }
+                else
+                {
+                    AddScore(c);
+                    updatePoints();
+                    comboSet.Add(i);
+                }
+                cdb[building].cardPile.Remove(c);
+            }
             processPile(c);
             if (c.isRemovable)
                 cdb[building].cardPile.Remove(c);
@@ -201,95 +268,14 @@ public class UIHandler : MonoBehaviour
     void PickLibrary()
     {
         PickBuilding("Library");
-        /*
-        Card randomCard;
-        randomCard = cdb["Library"].pick();
-        if (randomCard is ProfCard)
-        {
-            // card type 2 = professor cards
-            cardType = 2;
-            switch (randomCard.name)
-            {
-                case "Meireles Rui":
-                    profCardImage.sprite = profCardSprite;
-                    profImage.sprite = RuiSprite;
-                    profName.text = "Meireles Rui";
-                    profBonus.text = "+2 academics for every lab session";
-                    profCombo.text = "Combo: +5 academics for every lab session";
-                    profAnim.SetTrigger("profEntry");
-                    NextButton.gameObject.SetActive(true);
-                    if (comboSet.Contains(1))
-                        labBonus.AC = labBonus.AC + 5;
-                    else
-                    {
-                        labBonus.AC = labBonus.AC + 2;
-                        comboScet.Add(1);
-                    }
-                    break;
-                case "Justin Patch":
-                    break;
-                    //so on and so forth
-
-            }
-        }
-        else
-        {
-            cardType = 1;
-            cardImage.sprite = librarySprite;
-            anim.SetTrigger("Entry");
-            cardContent.text = randomCard.description;
-            cardEffect.text = randomCard.effect;
-            NextButton.gameObject.SetActive(true);
-            processPile(randomCard);
-
-    */
+       
         
     }
 
     void PickMain()
     {
         PickBuilding("Main");
-        /*
-        Card randomCard;
-        randomCard = main.pick();
-        if (randomCard is ProfCard)
-        {
-            cardType = 2;
-            switch (randomCard.name)
-            {
-                case "Meireles Rui":
-                    profCardImage.sprite = profCardSprite;
-                    profImage.sprite = RuiSprite;
-                    profName.text = "Meireles Rui";
-                    profBonus.text = "+2 academics for every lab session";
-                    profCombo.text = "Combo: +5 academics for every lab session";
-                    profAnim.SetTrigger("profEntry");
-                    NextButton.gameObject.SetActive(true);
-                    if (comboSet.Contains(1))
-                        labBonus.AC = labBonus.AC + 5;
-                    else
-                    {
-                        labBonus.AC = labBonus.AC + 2;
-                        comboSet.Add(1);
-                    }
-                    break;
-                case "Justin Patch":
-                    break;
-                    //so on and so forth
-
-            }
-        }
-        else
-        {
-            cardType = 1;
-            cardImage.sprite = mainSprite;
-            anim.SetTrigger("Entry");
-            cardContent.text = randomCard.description;
-            cardEffect.text = randomCard.effect;
-            NextButton.gameObject.SetActive(true);
-            processPile(randomCard);
-        }
-        */
+       
     }
 
     void PickDorm()
@@ -363,6 +349,15 @@ public class UIHandler : MonoBehaviour
         GymButton.interactable = false;
         SkinnerButton.interactable = false;
         GordonCommonsButton.interactable = false;
+        MainLbl.interactable = false;
+        LibraryLbl.interactable = false;
+        LoebLbl.interactable = false;
+        BridgeLbl.interactable = false;
+        VogelsteinButton.interactable = false;
+        GymLbl.interactable = false;
+        SkinnerLbl.interactable = false;
+        GordonCommonsLbl.interactable = false;
+        VogelsteinLbl.interactable = false;
     }
 
     private void enableButtons()
@@ -375,6 +370,15 @@ public class UIHandler : MonoBehaviour
         GymButton.interactable = true;
         SkinnerButton.interactable = true;
         GordonCommonsButton.interactable = true;
+        MainLbl.interactable = true;
+        LibraryLbl.interactable = true;
+        LoebLbl.interactable = true;
+        BridgeLbl.interactable = true;
+        VogelsteinButton.interactable = true;
+        GymLbl.interactable = true;
+        SkinnerLbl.interactable = true;
+        GordonCommonsLbl.interactable = true;
+        VogelsteinLbl.interactable = true;
     }
 
     public void processPile(Card randomCard)
@@ -404,12 +408,12 @@ public class UIHandler : MonoBehaviour
         turn++;
     }
 
+
     public void processProf (ProfCard pc)
     {
         //update the professor's image
         cardType = 2;
         int i = pc.index;
-        Debug.Log(i);
         profCardImage.sprite = profCardSprite;
         profName.text = pc.name;
         profBonus.text = pc.effect;
@@ -417,24 +421,24 @@ public class UIHandler : MonoBehaviour
         profImage.sprite = profSprites[i];
         profAnim.SetTrigger("profEntry");
         NextButton.gameObject.SetActive(true);
+        disableButtons();
         //if the combo is not completed add the professor's points to bonus
         if (comboSet.Contains(i))
         {
-            profBonusDict[pc.bonusType].addAttributes(pc.combo);
+            BonusDict[pc.bonusType].addAttributes(pc.combo);
             
         }
         else
         {
-            profBonusDict[pc.bonusType].addAttributes(pc.bonus);
+            BonusDict[pc.bonusType].addAttributes(pc.bonus);
             comboSet.Add(i);
         }
         if (pc.bonusType.Equals("Direct"))
         {
-            AddScore(profBonusDict["Direct"]);
-            profBonusDict["Direct"] = new Attributes(0,0,0,0,0);
+            AddScore(BonusDict["Direct"]);
+            BonusDict["Direct"] = new Attributes(0,0,0,0,0);
             }
     }
 }
 
-//update method that works for every card
 
