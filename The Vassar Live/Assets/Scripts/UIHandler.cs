@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using UnityEngine.SceneManagement;
 
 public class UIHandler : MonoBehaviour
 {
@@ -109,6 +109,8 @@ public class UIHandler : MonoBehaviour
     public Text PScore;
     [SerializeField]
     public Text HScore;
+    [SerializeField]
+    public Button SkillTreeBtn;
     #endregion
 
     public Dictionary<string, CardPile> cdb = new Dictionary<string, CardPile>();
@@ -206,6 +208,7 @@ public class UIHandler : MonoBehaviour
         GordonCommonsButton.onClick.AddListener(PickGordonCommons);
         LoebButton.onClick.AddListener(PickLoeb);
         GymButton.onClick.AddListener(PickGym);
+        SkillTreeBtn.onClick.AddListener(toSkillTree);
         anim = GameObject.Find("CardTemplate").GetComponent<Animator>();
         profAnim = GameObject.Find("ProfCardTemplate").GetComponent<Animator>();
         NextButton.gameObject.SetActive(false);
@@ -438,6 +441,11 @@ public class UIHandler : MonoBehaviour
             AddScore(BonusDict["Direct"]);
             BonusDict["Direct"] = new Attributes(0,0,0,0,0);
             }
+    }
+
+    public void toSkillTree()
+    {
+        SceneManager.LoadScene("Skill Tree");
     }
 }
 

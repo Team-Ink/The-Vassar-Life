@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Tree : MonoBehaviour
 //consider using subclasses for different trees
 {
-    #region Buttons
+    #region Buttons and UI elements
     [SerializeField]
     public Button root;
     [SerializeField]
@@ -31,6 +32,16 @@ public class Tree : MonoBehaviour
     public Button DWTT;
     [SerializeField]
     public Button LOT;
+    [SerializeField]
+    public Text SkillName;
+    [SerializeField]
+    public Text SkillEffect;
+    [SerializeField]
+    public Button backBtn;
+    [SerializeField]
+    public Button cancelBtn;
+    [SerializeField]
+    public Button activateBtn;
     #endregion
 
     #region social Skill
@@ -49,7 +60,8 @@ public class Tree : MonoBehaviour
     Skill LeaderofTheater = new Skill("Leader of Theater", "Gain 2.5x art at Vogelstein");
     #endregion
 
-
+    public Animator skillanim;
+    public Button current;
 
     int[] treeLevels = { 15, 35, 60, 90, 120 };
     Dictionary<Button, Skill> SkillDict = new Dictionary<Button, Skill>();
@@ -97,9 +109,13 @@ public class Tree : MonoBehaviour
         buildSTree();
         SrootNode.skill.isUnlocked = true;
         initSkillDict();
-        foreach(KeyValuePair<Button,Skill> s in SkillDict)
+        backBtn.onClick.AddListener(mainScene);
+        cancelBtn.onClick.AddListener(cancel);
+        skillanim = GameObject.Find("SkillPanel").GetComponent<Animator>();
+        activateBtn.onClick.AddListener(delegate { activate(current); });
+        foreach (KeyValuePair<Button,Skill> s in SkillDict)
         {
-            s.Key.onClick.AddListener(delegate{activate(s.Key);});
+            s.Key.onClick.AddListener(delegate{inspect(s.Key);});
         }
     }
 
@@ -259,11 +275,32 @@ public class Tree : MonoBehaviour
             //text.text = "active";
         }
     }
+    public void inspect(Button b)
+    {
+        SkillName.text = SkillDict[b].name;
+        SkillEffect.text = SkillDict[b].description;
+        skillanim.SetTrigger("SkillIn");
+        backBtn.gameObject.SetActive(false);
+        current = b;
+    }
+
+    public void mainScene()
+    {
+        SceneManager.LoadScene("SampleScene");
+    }
+
+    public void cancel ()
+    {
+        skillanim.SetTrigger("SkillOut");
+        backBtn.gameObject.SetActive(true);
+    }
+
     public void activate(Button b)
     {
+        SkillDict[b].isActive = true;
+        skillanim.SetTrigger("SkillOut");
+        backBtn.gameObject.SetActive(true);
         Image img = b.GetComponent<Image>();
         img.color = Color.green;
-        //text.text = "active";
-        SkillDict[b].isActive = true;
     }
 }
