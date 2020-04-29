@@ -8,7 +8,7 @@ public class AddSkill: SkillEffect
     public string addType;
     UIHandler uh;
 
-    AddSkill(Attributes add, string addType)
+    public AddSkill(Attributes add, string addType)
     {
         this.add = add;
         this.addType = addType;
@@ -16,6 +16,6 @@ public class AddSkill: SkillEffect
 
     public void skillActive()
     {
-        uh.BonusDict[addType].addAttributes(add);
+        uh.BonusDict[addType] = uh.BonusDict[addType].addAttributes(add);
     }
 }

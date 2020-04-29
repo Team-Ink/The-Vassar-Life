@@ -21,7 +21,7 @@ public class Tree : MonoBehaviour
     [SerializeField]
     public Button TMS;
     [SerializeField]
-    public  Button BFB;
+    public Button TT;
     [SerializeField]
     public Button SHV;
     [SerializeField]
@@ -45,26 +45,31 @@ public class Tree : MonoBehaviour
     #endregion
 
     #region social Skill
-    Skill UnlockDeece = new Skill("Unlock Deece", "Unlocks the Gordon Commons.");
-    Skill GroupStudySkill = new Skill("Group Study Skill", "Gain 1.5x Academic points in Main.");
-    Skill QuadPicnic = new Skill("Quad Picnic", "Gain 1.5x Happiness in Dorm.");
-    Skill MugNight = new Skill("Mug Night Over Moodle", "From this point onward, gain half academic points,  but gain 3x social points");
-    Skill DeeceCaffine = new Skill("Fueled By Deece Caffine", "Every time the player visits Deece, their next turn (after visiting deece) allows player to draw 3 cards");
-    Skill TheMidnightScream = new Skill("The Midnight Scream and Joss Beach Pancakes", "Re-energize during finals weeks with screams and pancakes and friendship. You have a newfound spirit of determination. Gain 2x social and 2x academics");
+    Skill UnlockDeece = new Skill("Unlock Deece", "Unlocks the Gordon Commons.", new UnlockSkill("Deece", true));
+    Skill GroupStudySkill = new Skill("Group Study Skill", "Gain 2 social per academic points at the library", new PointAs("Social", "Academic", 2, "Library"));
+    Skill QuadPicnic = new Skill("Quad Picnic", "Gain 1.5x Happiness in Dorm.", new MultiplierSkill(new Attributes(1, 1, 1, 1, 1.5), "Dorm"));
+    Skill MugNight = new Skill("Mug Night Over Moodle", "From this point onward, gain half academic points,  but gain 3x social points", new AllMultiplier(new Attributes(0.5, 1, 3, 1, 1)));
+    Skill DeeceCaffine = new Skill("Fueled By Deece Caffine", "Gain 1 point in all categories every time you enter the Deece", new AddSkill(new Attributes(1, 1, 1, 1, 1), "Deece"));
+    Skill TheMidnightScream = new Skill("The Midnight Scream and Joss Beach Pancakes", "Re-energize during finals weeks with screams and pancakes and friendship. " +
+        "You have a newfound spirit of determination. Gain 2x social and 2x academics", new AllMultiplier(new Attributes(2, 1, 2, 1, 1)));
     //but we don't have burger fi??
-    Skill BurgerFiBros = new Skill("BurgerFi Bros", "After experiencing burgerfi, the next 3 turns have a bonus of 2x all points, but player cannot visit Deece");
-    Skill ScenicHudsonValley = new Skill("Scenic Hudson Valley", "Unlocks Sunset Lake");
-    Skill SusanSteinShiva = new Skill("Devoted to Susan Stein Shiva", "Gain the same amount in social points when gaining art points");
-    Skill OfficiallyABrewer = new Skill("Officially a Brewer", "Gain the same amount in social points when gaining athletic points");
-    Skill DeeceWithTheTeam = new Skill("Deece With the Team", "Gain 4x happiness at Deece");
-    Skill LeaderofTheater = new Skill("Leader of Theater", "Gain 2.5x art at Vogelstein");
+    Skill TastyTuesday = new Skill("Tasty Tuesday Tradition", "Enjoy Tasty Tuesdays with friends and gain +3 social everytime you visit main.", new AddSkill(new Attributes(0, 0, 3, 0, 0), "Main"));
+    Skill ScenicHudsonValley = new Skill("Scenic Hudson Valley", "Unlocks Sunset Lake", new UnlockSkill("Sunset Lake", true));
+    Skill SusanSteinShiva = new Skill("Devoted to Susan Stein Shiva", "Vogelstein cards now give the  same amount of social points as art points", new PointAs("Social", "Art", 1, "Vogelstein"));
+    Skill OfficiallyABrewer = new Skill("Officially a Brewer", "Athletic & Fitness Center cards now give the same amount of social as physique points", new PointAs("Social", "Physique", 1, "Gym"));
+    Skill DeeceWithTheTeam = new Skill("Deece With the Team", "Draw 3 cards from Deece", new GiveCards("Deece", 3));
+    Skill LeaderofTheater = new Skill("Leader of Theater", "Draw 3 cards from Vogelstein", new GiveCards("Vogelstein", 3));
     #endregion
 
     public Animator skillanim;
-    public Button current;
+    public Button currentBtn;
+    public Skill currentSkill;
+    public UIHandler uh;
+    public int i =0;
 
-    int[] treeLevels = { 15, 35, 60, 90, 120 };
+    int[] treeLevels = { 10, 20, 30, 45, 60, 80, 100, 125, 150, 175, 200, 230 };
     Dictionary<Button, Skill> SkillDict = new Dictionary<Button, Skill>();
+    Dictionary<Button, bool> ButtonDict = new Dictionary<Button, bool>();
 
     Node SrootNode;
 
@@ -76,12 +81,25 @@ public class Tree : MonoBehaviour
         SkillDict.Add(MN, MugNight);
         SkillDict.Add(DC, DeeceCaffine);
         SkillDict.Add(TMS, TheMidnightScream);
-        SkillDict.Add(BFB, BurgerFiBros);
+        SkillDict.Add(TT, TastyTuesday);
         SkillDict.Add(SHV, ScenicHudsonValley);
         SkillDict.Add(SSS, SusanSteinShiva);
         SkillDict.Add(OAB, OfficiallyABrewer);
         SkillDict.Add(DWTT, DeeceWithTheTeam);
         SkillDict.Add(LOT, LeaderofTheater);
+
+        ButtonDict.Add(root, false);
+        ButtonDict.Add(GSS, false);
+        ButtonDict.Add(QP, false);
+        ButtonDict.Add(MN, false);
+        ButtonDict.Add(DC, false);
+        ButtonDict.Add(TMS, false);
+        ButtonDict.Add(TT, false);
+        ButtonDict.Add(SHV, false);
+        ButtonDict.Add(SSS, false);
+        ButtonDict.Add(OAB, false);
+        ButtonDict.Add(DWTT, false);
+        ButtonDict.Add(LOT, false);
     }
 
     //use the default linked list
@@ -112,10 +130,10 @@ public class Tree : MonoBehaviour
         backBtn.onClick.AddListener(mainScene);
         cancelBtn.onClick.AddListener(cancel);
         skillanim = GameObject.Find("SkillPanel").GetComponent<Animator>();
-        activateBtn.onClick.AddListener(delegate { activate(current); });
-        foreach (KeyValuePair<Button,Skill> s in SkillDict)
+        activateBtn.onClick.AddListener(delegate { activate(currentBtn); });
+        foreach (KeyValuePair<Button, Skill> s in SkillDict)
         {
-            s.Key.onClick.AddListener(delegate{inspect(s.Key);});
+            s.Key.onClick.AddListener(delegate { inspect(s.Key); });
         }
     }
 
@@ -136,7 +154,7 @@ public class Tree : MonoBehaviour
         Node MNNode = new Node(MugNight);
         Node DCNode = new Node(DeeceCaffine);
         Node TMSNode = new Node(TheMidnightScream);
-        Node BFBNode = new Node(BurgerFiBros);
+        Node TTNode = new Node(TastyTuesday);
         Node SHVNode = new Node(ScenicHudsonValley);
         Node SSSNode = new Node(SusanSteinShiva);
         Node OABNode = new Node(OfficiallyABrewer);
@@ -146,10 +164,10 @@ public class Tree : MonoBehaviour
         SrootNode.addChild(QPNode);
         GSSNode.addChild(MNNode);
         GSSNode.addChild(DCNode);
-        GSSNode.addChild(BFBNode);
+        GSSNode.addChild(TTNode);
         DCNode.addChild(TMSNode);
-        BFBNode.addChild(SHVNode);
-        QPNode.addChild(BFBNode);
+        TTNode.addChild(SHVNode);
+        QPNode.addChild(TTNode);
         QPNode.addChild(OABNode);
         QPNode.addChild(SSSNode);
         SSSNode.addChild(LOTNode);
@@ -172,7 +190,7 @@ public class Tree : MonoBehaviour
             //stop if skill not available (we might have problems because the other "curr" might be unlocked
 
             //access its children and push them back in
-            if (curr.skill.isActive)
+            if (curr.skill.isActive && uh.points.S >= treeLevels[i])
             {
                 foreach (Node child in curr.children)
                 {
@@ -185,92 +203,95 @@ public class Tree : MonoBehaviour
 
     public void updateBtn()
     {
-        if (UnlockDeece.isActive)
-            root.interactable = false;
+        if (!UnlockDeece.isActive)
+            ButtonDict[root] = GroupStudySkill.isUnlocked;
+        else
+            ButtonDict[root] = false;
         if (!GroupStudySkill.isActive)
-            GSS.interactable = GroupStudySkill.isUnlocked;
+            ButtonDict[GSS] = GroupStudySkill.isUnlocked;
         else
         {
-            GSS.interactable = false;
+            ButtonDict[GSS] = false;
             //Text text = GSS.GetComponent<Text>();
             //text.text = "active";
         }
         if (!QuadPicnic.isActive)
-            QP.interactable = QuadPicnic.isUnlocked;
+            ButtonDict[QP] = QuadPicnic.isUnlocked;
         else
         {
-            QP.interactable = false;
+            ButtonDict[QP] = false;
             //Text text = QP.GetComponent<Text>();
             //text.text = "active";
         }
         if (!MugNight.isActive)
-            MN.interactable = MugNight.isUnlocked;
+            ButtonDict[MN] = MugNight.isUnlocked;
         else
         {
-            MN.interactable = false;
+            ButtonDict[MN] = false;
             //Text text = MN.GetComponent<Text>();
             //text.text = "active";
         }
         if (!DeeceCaffine.isActive)
-            DC.interactable = DeeceCaffine.isUnlocked;
-        else {
-            DC.interactable = false;
+            ButtonDict[DC] = DeeceCaffine.isUnlocked;
+        else
+        {
+            ButtonDict[DC] = false;
             //Text text = DC.GetComponent<Text>();
             //text.text = "active";
         }
         if (!TheMidnightScream.isActive)
-            TMS.interactable = TheMidnightScream.isUnlocked;
+            ButtonDict[TMS] = TheMidnightScream.isUnlocked;
         else
         {
-            TMS.interactable = false;
+            ButtonDict[TMS] = false;
             //Text text = TMS.GetComponent<Text>();
             //text.text = "active";
         }
-        if (!BurgerFiBros.isActive)
-            BFB.interactable = BurgerFiBros.isUnlocked;
+        if (!TastyTuesday.isActive)
+            ButtonDict[TT] = TastyTuesday.isUnlocked;
         else
         {
-            BFB.interactable = false;
-            //Text text = BFB.GetComponent<Text>();
+            ButtonDict[TT] = false;
+            //Text text = TT.GetComponent<Text>();
             //text.text = "Active";
         }
         if (!ScenicHudsonValley.isActive)
-            SHV.interactable = ScenicHudsonValley.isUnlocked;
+            ButtonDict[SHV] = ScenicHudsonValley.isUnlocked;
         else
         {
-            SHV.interactable = false;
+            ButtonDict[SHV] = false;
             //Text text = SHV.GetComponent<Text>();
             //text.text = "active";
         }
         if (!SusanSteinShiva.isActive)
-            SSS.interactable = SusanSteinShiva.isUnlocked;
+            ButtonDict[SSS] = SusanSteinShiva.isUnlocked;
         else
         {
-            SSS.interactable = false;
+            ButtonDict[SSS] = false;
             //Text text = SSS.GetComponent<Text>();
             //text.text = "active";
         }
         if (!OfficiallyABrewer.isActive)
-            OAB.interactable = OfficiallyABrewer.isUnlocked;
+            ButtonDict[OAB] = OfficiallyABrewer.isUnlocked;
         else
         {
-            OAB.interactable = false;
+            ButtonDict[OAB] = false;
             //Text text = OAB.GetComponent<Text>();
             //text.text = "active";
         }
         if (!DeeceWithTheTeam.isActive)
-            DWTT.interactable = DeeceWithTheTeam.isUnlocked;
+            ButtonDict[DWTT] = DeeceWithTheTeam.isUnlocked;
         else
         {
-            DWTT.interactable = false;
+            ButtonDict[DWTT] = false;
             //Text text = DWTT.GetComponent<Text>();
             //text.text = "active";
         }
         if (!LeaderofTheater.isActive)
-            LOT.interactable = LeaderofTheater.isUnlocked;
+            ButtonDict[LOT] = LeaderofTheater.isUnlocked;
         else
         {
-            LOT.interactable = false;
+            ButtonDict[LOT] = false;
             //Text text = LOT.GetComponent<Text>();
             //text.text = "active";
         }
@@ -281,7 +302,9 @@ public class Tree : MonoBehaviour
         SkillEffect.text = SkillDict[b].description;
         skillanim.SetTrigger("SkillIn");
         backBtn.gameObject.SetActive(false);
-        current = b;
+        currentBtn = b;
+        currentSkill = SkillDict[currentBtn];
+        activateBtn.interactable = ButtonDict[currentBtn];
     }
 
     public void mainScene()
@@ -289,7 +312,7 @@ public class Tree : MonoBehaviour
         SceneManager.LoadScene("SampleScene");
     }
 
-    public void cancel ()
+    public void cancel()
     {
         skillanim.SetTrigger("SkillOut");
         backBtn.gameObject.SetActive(true);
@@ -302,5 +325,6 @@ public class Tree : MonoBehaviour
         backBtn.gameObject.SetActive(true);
         Image img = b.GetComponent<Image>();
         img.color = Color.green;
+        i++;
     }
 }

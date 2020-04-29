@@ -8,7 +8,7 @@ public class UnlockSkill : SkillEffect
     string building;
     UIHandler uh;
 
-    UnlockSkill(string building, bool unlock)
+    public UnlockSkill(string building, bool unlock)
     {
         this.building = building;
         this.unlock = unlock;

@@ -2679,7 +2679,7 @@ MonoBehaviour:
   MN: {fileID: 1612095476}
   DC: {fileID: 1119160385}
   TMS: {fileID: 666839171}
-  BFB: {fileID: 1392792775}
+  TT: {fileID: 1392792775}
   SHV: {fileID: 2102479917}
   SSS: {fileID: 223457665}
   OAB: {fileID: 2008465143}
@@ -2691,7 +2691,9 @@ MonoBehaviour:
   cancelBtn: {fileID: 786390968}
   activateBtn: {fileID: 745767016}
   skillanim: {fileID: 0}
-  current: {fileID: 0}
+  currentBtn: {fileID: 0}
+  uh: {fileID: 0}
+  i: 0
 --- !u!1 &1612095475
 GameObject:
   m_ObjectHideFlags: 0

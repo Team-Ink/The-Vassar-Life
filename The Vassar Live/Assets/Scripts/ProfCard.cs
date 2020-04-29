@@ -19,6 +19,7 @@ public class ProfCard : Card
         this.combo = combo;
         this.index = index;
         this.bonusType = bonusType;
+
     }
 
     public void updateState(Attributes playeratt, Attributes bonus)

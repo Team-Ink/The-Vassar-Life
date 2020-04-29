@@ -8,7 +8,7 @@ public class MultiplierSkill: SkillEffect
     public string multiplierType;
     UIHandler uh;
 
-    MultiplierSkill(Attributes multiplier, string multiplierType)
+    public MultiplierSkill(Attributes multiplier, string multiplierType)
     {
         this.multiplier = multiplier;
         this.multiplierType = multiplierType;
@@ -16,6 +16,6 @@ public class MultiplierSkill: SkillEffect
 
     public void skillActive()
     {
-        uh.MultiplierDict[multiplierType].multiplyAttributes(multiplier);
+        uh.MultiplierDict[multiplierType]= uh.MultiplierDict[multiplierType].multiplyAttributes(multiplier);
     }
 }

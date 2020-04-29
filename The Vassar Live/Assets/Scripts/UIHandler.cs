@@ -6,21 +6,19 @@ using UnityEngine.SceneManagement;
 
 public class UIHandler : MonoBehaviour
 {
-    public static Attributes points = new Attributes(0, 0, 0, 0, 5);
-    static Attributes labBonus = new Attributes(0, 0, 0, 0, 0);
-    static Attributes sunsetLakeBonus = new Attributes(0, 0, 0, 0, 0);
-    static Attributes mainBonus = new Attributes(0, 0, 0, 0, 0);
-    static Attributes Bonus = new Attributes(0, 0, 0, 0, 0);
+    public Attributes points = SavedScores.currentScore;
+    public Attributes pointsAdded = new Attributes(0, 0, 0, 0, 0);
     HashSet<int> comboSet = new HashSet<int>();
-    //using enums instead of int
     int cardType;
-    double ac = points.AC;
-    double ar = points.AR;
-    double s = points.S;
-    double p = points.P;
-    double h = points.H;
-    int turn = 0;
+    //public double ac = points.AC;
+    //public double ar = points.AR;
+    //public double s = points.S;
+    //public double p = points.P;
+    //public double h = points.H;
+    int turn = SavedScores.currentTurn;
     double multiplier = 1.0;
+    bool skip = false;
+    public Card currentCard;
     #region UIFields
     [SerializeField]
     public Button LibraryButton;
@@ -161,6 +159,7 @@ public class UIHandler : MonoBehaviour
         BonusDict.Add("Dorm", new Attributes(0, 0, 0, 0, 0));
         BonusDict.Add("Sunset Lake", new Attributes(0, 0, 0, 0, 0));
         BonusDict.Add("Direct", new Attributes(0, 0, 0, 0, 0));
+        BonusDict.Add("Library", new Attributes(0, 0, 0, 0, 0));
     }
 
     public void initMultiplierDict()
@@ -172,6 +171,8 @@ public class UIHandler : MonoBehaviour
         MultiplierDict.Add("Deece", new Attributes(1, 1, 1, 1, 1));
         MultiplierDict.Add("Dorm", new Attributes(1, 1, 1, 1, 1));
         MultiplierDict.Add("Sunset Lake", new Attributes(1, 1, 1, 1, 1));
+        MultiplierDict.Add("Library", new Attributes(1, 1, 1, 1, 1));
+
     }
 
     public void initUnlockDict()
@@ -192,11 +193,13 @@ public class UIHandler : MonoBehaviour
     void Start()
     {
         //make sure all the dictionaries are initialized
+        //DontDestroyOnLoad(points);
         initCdb();
         initBonusDict();
         initBuildingSprite();
         initProfSprites();
         initMultiplierDict();
+        updatePoints();
         cardImage = GameObject.Find("CardTemplate").GetComponent<Image>();
         profCardImage = GameObject.Find("ProfCardTemplate").GetComponent<Image>();
         profImage = GameObject.Find("Image").GetComponent<Image>();
@@ -212,7 +215,8 @@ public class UIHandler : MonoBehaviour
         anim = GameObject.Find("CardTemplate").GetComponent<Animator>();
         profAnim = GameObject.Find("ProfCardTemplate").GetComponent<Animator>();
         NextButton.gameObject.SetActive(false);
-        NextButton.onClick.AddListener(cardExit);
+        NextButton.onClick.AddListener(newTurn);
+        
     }
 
     void Update()
@@ -220,9 +224,10 @@ public class UIHandler : MonoBehaviour
 
     }
 
-    void PickBuilding(string building)
+    public void PickBuilding(string building)
     {
         Card c = cdb[building].pick();
+        currentCard = c;
         if (c is ProfCard)
         {
             processProf((ProfCard)c);
@@ -245,13 +250,18 @@ public class UIHandler : MonoBehaviour
                 }
                 else
                 {
-                    AddScore(c);
+                    AddScore(c,building);
                     updatePoints();
                     comboSet.Add(i);
                 }
                 cdb[building].cardPile.Remove(c);
             }
-            processPile(c);
+            AddScore(c,building);
+            updatePoints();
+            if (c.note.Equals("Skip"))
+            {
+                skip=true;
+            }
             if (c.isRemovable)
                 cdb[building].cardPile.Remove(c);
             disableButtons();
@@ -268,6 +278,7 @@ public class UIHandler : MonoBehaviour
         enableButtons();
     }
 
+    #region pick methods
     void PickLibrary()
     {
         PickBuilding("Library");
@@ -314,32 +325,33 @@ public class UIHandler : MonoBehaviour
         PickBuilding("Gym");
 
     }
+    #endregion
 
     void updatePoints()
     {
-        ACScore.text = ac.ToString();
-        ARScore.text = ar.ToString();
-        SScore.text = s.ToString();
-        PScore.text = p.ToString();
-        HScore.text = h.ToString();
+        ACScore.text = points.AC.ToString();
+        ARScore.text = points.AR.ToString();
+        SScore.text = points.S.ToString();
+        PScore.text = points.P.ToString();
+        HScore.text = points.H.ToString();
     }
 
-    public void AddScore(Card c)
+    public void AddScore(Card c, string building)
     {
-        ac += c.att.AC * multiplier;
-        ar += c.att.AR * multiplier;
-        s += c.att.S * multiplier;
-        p += c.att.P * multiplier;
-        h += c.att.H;
-    }
-
-    public void AddScore (Attributes att)
-    {
-        ac += att.AC * multiplier;
-        ar += att.AR * multiplier;
-        s += att.S * multiplier;
-        p += att.P * multiplier;
-        h += att.H;
+        pointsAdded = pointsAdded.addAttributes(c.att).addAttributes(BonusDict[building]).
+            multiplyAttributes(MultiplierDict[building]);
+        pointsAdded.AC *= multiplier;
+        pointsAdded.AR *= multiplier;
+        pointsAdded.S *= multiplier;
+        pointsAdded.P *= multiplier;
+        Debug.Log("Points added AC:" + pointsAdded.AC+ "S:"+ pointsAdded.S);
+        points = points.addAttributes(pointsAdded);
+        pointsAdded = pointsAdded.multiply(0);
+        //pointsAdded.AC = (c.att.AC+BonusDict[building].AC) multiplier;
+        //pointsAdded.AR += c.att.AR * multiplier;
+        //pointsAdded.S += c.att.S * multiplier;
+        //pointsAdded.P += c.att.P * multiplier;
+        //pointsAdded.H += c.att.H;
     }
 
     private void disableButtons()
@@ -384,31 +396,34 @@ public class UIHandler : MonoBehaviour
         VogelsteinLbl.interactable = true;
     }
 
-    public void processPile(Card randomCard)
+    public void newTurn()
     {
+        cardExit();
         //if (turn >= 30)
         //    endGame();
         //else
         // {
-        if (h <= -10)
+        if (points.H <= -10)
             multiplier = 0.25;
-        else if (h < 0)
+        else if (points.H < 0)
             multiplier = 0.5;
-        else if (h < 20 && h >= 0)
+        else if (points.H < 20 && points.H >= 0)
             multiplier = 1;
-        else if (h >= 20)
+        else if (points.H >= 20)
             multiplier = 1.2;
-        else if (h >= 50)
+        else if (points.H >= 50)
             multiplier = 1.5;
-        else if (h >= 75)
+        else if (points.H >= 75)
             multiplier = 2;
-        AddScore(randomCard);
-        updatePoints();
-        if (randomCard.note.Equals("Skip"))
+        if (skip)
         {
-            turn++;
+            turn += 2;
+            skip = false;
         }
-        turn++;
+        else turn++;
+        //update turn text
+        SavedScores.currentScore = points;
+        SavedScores.currentTurn = turn;
     }
 
 
@@ -438,7 +453,7 @@ public class UIHandler : MonoBehaviour
         }
         if (pc.bonusType.Equals("Direct"))
         {
-            AddScore(BonusDict["Direct"]);
+            points = points.addAttributes(BonusDict["Direct"]);
             BonusDict["Direct"] = new Attributes(0,0,0,0,0);
             }
     }

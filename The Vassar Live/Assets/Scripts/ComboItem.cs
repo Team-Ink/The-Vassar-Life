@@ -17,7 +17,6 @@ public class ComboItem : Card
         this.description = description;
         this.effect = effect;
         this.att = att;
-        //this.note = note;
         this.combo = combo;
         this.comboType = comboType;
         this.index = index;
